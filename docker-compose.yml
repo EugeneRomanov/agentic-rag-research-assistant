@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mcp_server:
+    build: .
+    ports:
+      - "8002:8002"
+    environment:
+      - QDRANT_URL=${QDRANT_URL}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - OPENAI_API_KEY=${OPENROUTER_API_KEY}
+      - OPENAI_API_BASE=https://openrouter.ai/api/v1
+    env_file:
+      - .env
+    command: python -m mcp_server.server
+
+  agent_api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mcp_server
+    environment:
+      - MCP_SERVER_URL=http://mcp_server:8002/mcp
+      - QDRANT_URL=${QDRANT_URL}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - OPENAI_API_KEY=${OPENROUTER_API_KEY}
+      - OPENAI_API_BASE=https://openrouter.ai/api/v1
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - LANGFUSE_HOST=${LANGFUSE_HOST}
+    env_file:
+      - .env
+    command: uvicorn app.api:api --host 0.0.0.0 --port 8000

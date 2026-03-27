@@ -1,0 +1,30 @@
+# Секреты и настройки
+.env
+
+# Базы данных и мониторинг (из твоего docker-compose)
+qdrant/
+langfuse/
+ollama/
+vllm/
+mlflow/
+test/
+
+# Данные и кэш
+data/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Файлы исследований
+*.dill
+*.pdf
+.DS_Storehf_cache/
+qdrant_data/
+
+Add-Content .gitignore "scripts/hf_cache/"
+Add-Content .gitignore "**/.ipynb_checkpoints/"
+
+Add-Content .gitignore "hf_cache/"
+Add-Content .gitignore "qdrant_data/"
+Add-Content .gitignore "data/arxiv_papers/*.pdf"
