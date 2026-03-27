@@ -1,29 +1,55 @@
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {
-  'background': '#ffffff',
-  'primaryColor': '#ffffff',
-  'primaryBorderColor': '#000000',
-  'primaryTextColor': '#000000',
-  'lineColor': '#000000',
-  'fontFamily': 'arial',
+  'background': 'transparent',
+  'primaryColor': '#1f1f1f',
+  'primaryBorderColor': '#bbbbbb',
+  'primaryTextColor': '#ffffff',
+  'secondaryColor': '#2a2a2a',
+  'tertiaryColor': '#2a2a2a',
+  'lineColor': '#e0e0e0',
+  'fontFamily': 'Inter, Arial',
   'fontSize': '14px'
 }}}%%
 
-graph TD
-    User[Пользователь] -->|HTTP запрос| API[API Gateway<br/>FastAPI]
-    User -->|Консольный ввод| CLI[CLI Agent]
-    
-    API --> Agent[SciVerify Agent<br/>LangGraph]
+flowchart LR
+
+    %% === User Layer ===
+    User[👤 Пользователь]
+
+    %% === Interfaces ===
+    subgraph Interfaces
+        API[🌐 API Gateway<br/>FastAPI]
+        CLI[🖥 CLI Agent]
+    end
+
+    %% === Core System ===
+    subgraph "SciVerify Core"
+        Agent[🧠 SciVerify Agent<br/>LangGraph]
+        MCP[📚 MCP Server Retriever]
+    end
+
+    %% === External Services ===
+    subgraph "External Services"
+        Qdrant[(🗄 Qdrant Cloud<br/>Vector DB)]
+        OpenRouter[🤖 OpenRouter API<br/>Gemini 2.0 Flash]
+        LangFuse[📊 LangFuse<br/>Observability]
+        ArXiv[📄 arXiv.org]
+    end
+
+    %% === Flows ===
+    User -->|HTTP запрос| API
+    User -->|Консоль| CLI
+
+    API --> Agent
     CLI --> Agent
-    
-    Agent -->|Поиск статей| MCP[MCP Server<br/>Retriever]
-    MCP -->|Векторный поиск| Qdrant[Qdrant Cloud<br/>Vector DB]
-    
-    Agent -->|LLM вызовы| OpenRouter[OpenRouter API<br/>Gemini 2.0 Flash]
-    Agent -->|Трейсинг| LangFuse[LangFuse<br/>Observability]
-    
-    MCP -->|PDF скачивание| ArXiv[arXiv.org]
-    
-    classDef white fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    class User,API,CLI,Agent,MCP,Qdrant,OpenRouter,LangFuse,ArXiv white
+
+    Agent -->|Поиск статей| MCP
+    MCP -->|Vector search| Qdrant
+    MCP -->|PDF download| ArXiv
+
+    Agent -->|LLM calls| OpenRouter
+    Agent -->|Tracing| LangFuse
+
+    %% === Visibility fix ===
+    linkStyle default stroke:#e0e0e0,stroke-width:2px
 ```

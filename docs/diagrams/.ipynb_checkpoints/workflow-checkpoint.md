@@ -1,42 +1,50 @@
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {
-  'background': '#ffffff',
-  'primaryColor': '#ffffff',
-  'primaryBorderColor': '#000000',
-  'primaryTextColor': '#000000',
-  'lineColor': '#000000',
-  'secondaryColor': '#f5f5f5',
-  'tertiaryColor': '#ffffff',
-  'fontFamily': 'arial',
+  'background': 'transparent',
+  'primaryColor': '#1f1f1f',
+  'primaryBorderColor': '#bbbbbb',
+  'primaryTextColor': '#ffffff',
+  'secondaryColor': '#2a2a2a',
+  'tertiaryColor': '#2a2a2a',
+  'lineColor': '#e0e0e0',
+  'fontFamily': 'Inter, Arial',
   'fontSize': '14px'
 }}}%%
 
-graph TD
-    Start([Start]) --> Safeguard[Safeguard Node<br/>Проверка научности]
-    
-    Safeguard -->|Не научный| End1([End: Blocked])
-    Safeguard -->|Научный| Translator[Translator Node<br/>Анализ запроса<br/>Генерация поискового запроса]
-    
-    Translator --> Retrieval[Retrieval Node<br/>MCP Search]
-    
-    Retrieval --> Generate[Generate Node<br/>Формирование ответа<br/>с цитированием]
-    
-    Generate --> Critic[Critic Node<br/>Проверка ответа]
-    
-    Critic -->|APPROVED| End2([End: Success])
-    Critic -->|REFETCH| CheckTurn{revision_number < 2?}
-    
+flowchart TD
+
+    %% === Start ===
+    Start([🚀 Start])
+
+    %% === Core Flow ===
+    Safeguard[🛡 Safeguard<br/>Проверка научности]
+    Translator[🌐 Translator<br/>Анализ + поиск]
+    Retrieval[📚 Retrieval<br/>MCP Search]
+    Generate[✍️ Generate<br/>Ответ с цитированием]
+    Critic[🧪 Critic<br/>Проверка ответа]
+
+    %% === Decisions ===
+    CheckTurn{🔁 revision_number < 2?}
+
+    %% === End States ===
+    EndBlocked([⛔ Blocked])
+    EndSuccess([✅ Success])
+    EndRetry([⚠️ Max retries])
+
+    %% === Flow ===
+    Start --> Safeguard
+
+    Safeguard -->|Не научный| EndBlocked
+    Safeguard -->|Ок| Translator
+
+    Translator --> Retrieval --> Generate --> Critic
+
+    Critic -->|APPROVED| EndSuccess
+    Critic -->|REFETCH| CheckTurn
+
     CheckTurn -->|Да| Translator
-    CheckTurn -->|Нет| End3([End: Max retries])
-    
-    style Start fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style Safeguard fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style Translator fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style Retrieval fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style Generate fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style Critic fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style CheckTurn fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style End1 fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style End2 fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
-    style End3 fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    CheckTurn -->|Нет| EndRetry
+
+    %% === Visibility fix ===
+    linkStyle default stroke:#e0e0e0,stroke-width:2px
 ```
