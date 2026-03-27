@@ -24,7 +24,9 @@ qdrant_data/
 
 Add-Content .gitignore "scripts/hf_cache/"
 Add-Content .gitignore "**/.ipynb_checkpoints/"
-
+Add-Content .gitignore "`n# Jupyter notebooks"
+Add-Content .gitignore "**/.ipynb_checkpoints/"
+Add-Content .gitignore ".ipynb_checkpoints/"
 Add-Content .gitignore "hf_cache/"
 Add-Content .gitignore "qdrant_data/"
 Add-Content .gitignore "data/arxiv_papers/*.pdf"

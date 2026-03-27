@@ -4,35 +4,31 @@
   'primaryColor': '#1f1f1f',
   'primaryBorderColor': '#bbbbbb',
   'primaryTextColor': '#ffffff',
-  'secondaryColor': '#2a2a2a',
-  'tertiaryColor': '#2a2a2a',
   'lineColor': '#e0e0e0',
   'fontFamily': 'Inter, Arial',
   'fontSize': '14px'
 }}}%%
 
 flowchart LR
-
     %% === Input ===
-    Query["User Query: What is BERT?"]
+    Query(["👤 User Query: What is BERT?"]):::input
 
     %% === Pipeline ===
-    Translate["Translate → English"]
-    Search["Search via MCP"]
-    Rerank["Rerank + entity matching"]
-    Generate["Generate answer + citations"]
-    Critic["Critic verification"]
-    Answer["Final Answer with sources"]
+    Translate(["🌐 Translate → English"]):::process
+    Search(["🔎 Search via MCP"]):::process
+    Rerank(["📊 Rerank + entity matching"]):::process
+    Generate(["✍️ Generate answer + citations"]):::process
+    Critic(["🧪 Critic verification"]):::process
+    Answer(["✅ Final Answer with sources"]):::output
 
     %% === Storage / Services ===
-    Qdrant[(Qdrant Vector DB)]
-    LangFuse[(LangFuse Tracing)]
-    Trace["Trace ID"]
+    Qdrant[(🗄 Qdrant Vector DB)]:::storage
+    LangFuse[(📊 LangFuse Tracing)]:::storage
+    Trace(["🧾 Trace ID"]):::storage
 
     %% === Main Flow ===
     Query --> Translate --> Search
     Search --> Rerank --> Generate --> Critic
-
     Critic -->|APPROVED| Answer
     Critic -->|REFETCH| Search
 
@@ -44,6 +40,9 @@ flowchart LR
     Critic --> LangFuse
     LangFuse --> Trace
 
-    %% === Visibility fix ===
-    linkStyle default stroke:#e0e0e0,stroke-width:2px
+    %% === Styling ===
+    classDef input fill:#2a9d8f,stroke:#1f776f,color:#ffffff,stroke-width:2px
+    classDef process fill:#e9c46a,stroke:#c7a52c,color:#000000,stroke-width:2px
+    classDef output fill:#264653,stroke:#1e353f,color:#ffffff,stroke-width:2px
+    classDef storage fill:#f4a261,stroke:#d1783b,color:#000000,stroke-width:2px
 ```
