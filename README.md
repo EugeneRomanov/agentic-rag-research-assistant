@@ -109,7 +109,7 @@ LANGFUSE_HOST=https://cloud.langfuse.com
 ## 📂 Структура проекта
 
 ```text
-├── app/                    # Логика LangGraph агента
+├── app/                   # Логика LangGraph агента
 │   ├── graph.py           # Определение узлов и переходов графа
 │   ├── state.py           # Описание состояния (State) агента
 │   └── api.py             # Интерфейс (FastAPI/CLI)
