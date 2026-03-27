@@ -1,30 +1,30 @@
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {
   'background': 'transparent',
-  'primaryColor': '#1f1f1f',
-  'primaryBorderColor': '#bbbbbb',
-  'primaryTextColor': '#ffffff',
+  'primaryColor': '#ffffff',
+  'primaryBorderColor': '#000000',
+  'primaryTextColor': '#000000',
   'lineColor': '#e0e0e0',
   'fontFamily': 'Inter, Arial',
   'fontSize': '14px'
 }}}%%
 
-flowchart LR
+flowchart TD
     %% === Input ===
-    Query(["👤 User Query: What is BERT?"]):::input
+    Query(["👤 User Query: What is BERT?"])
 
     %% === Pipeline ===
-    Translate(["🌐 Translate → English"]):::process
-    Search(["🔎 Search via MCP"]):::process
-    Rerank(["📊 Rerank + entity matching"]):::process
-    Generate(["✍️ Generate answer + citations"]):::process
-    Critic(["🧪 Critic verification"]):::process
-    Answer(["✅ Final Answer with sources"]):::output
+    Translate(["🌐 Translate → English"])
+    Search(["🔎 Search via MCP"])
+    Rerank(["📊 Rerank + entity matching"])
+    Generate(["✍️ Generate answer + citations"])
+    Critic(["🧪 Critic verification"])
+    Answer(["✅ Final Answer with sources"])
 
     %% === Storage / Services ===
-    Qdrant[(🗄 Qdrant Vector DB)]:::storage
-    LangFuse[(📊 LangFuse Tracing)]:::storage
-    Trace(["🧾 Trace ID"]):::storage
+    Qdrant[(🗄 Qdrant Vector DB)]
+    LangFuse[(📊 LangFuse Tracing)]
+    Trace(["🧾 Trace ID"])
 
     %% === Main Flow ===
     Query --> Translate --> Search
@@ -40,9 +40,10 @@ flowchart LR
     Critic --> LangFuse
     LangFuse --> Trace
 
-    %% === Styling ===
-    classDef input fill:#2a9d8f,stroke:#1f776f,color:#ffffff,stroke-width:2px
-    classDef process fill:#e9c46a,stroke:#c7a52c,color:#000000,stroke-width:2px
-    classDef output fill:#264653,stroke:#1e353f,color:#ffffff,stroke-width:2px
-    classDef storage fill:#f4a261,stroke:#d1783b,color:#000000,stroke-width:2px
+    %% === Styling (same as original) ===
+    classDef white fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    class Query,Translate,Search,Rerank,Generate,Critic,Answer,Qdrant,LangFuse,Trace white
+
+    %% === Visibility fix ===
+    linkStyle default stroke:#e0e0e0,stroke-width:2px
 ```
