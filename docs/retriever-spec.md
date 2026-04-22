@@ -68,6 +68,34 @@ def search_scientific_papers(
 
 ## 4. Обработка ошибок
 
+### Retry Policy (Exponential Backoff)
+
+При ошибках эмбеддинга или временной недоступности Qdrant используется стратегия повторных попыток с экспоненциальной задержкой:
+
+| Попытка | Задержка | Описание |
+|:---:|:---:|:---|
+| 1 | 1 сек | Первая повторная попытка |
+| 2 | 2 сек | Вторая повторная попытка |
+| 3 | 4 сек | Третья повторная попытка |
+
+- **Максимум попыток:** 3 (настраивается через `MAX_RETRIES`)
+- **Алгоритм:** `wait = 2 ** attempt` (1, 2, 4 секунды)
+- **Применимо к:** Ошибкам эмбеддинга (`EMBEDDING_FAILED`) и сетевым таймаутам
+
+**Пример кода:**
+```python
+def search_with_backoff(self, query: str, max_retries: int = 3):
+    for attempt in range(max_retries):
+        try:
+            return self.search(query)
+        except Exception as e:
+            wait = 2 ** attempt
+            print(f"Attempt {attempt + 1} failed, retrying in {wait}s")
+            time.sleep(wait)
+    raise Exception("Max retries exceeded")
+```
+
+
 ### Коды ответов
 | Ошибка | Причина | Стратегия |
 |:---|:---|:---|
@@ -75,6 +103,8 @@ def search_scientific_papers(
 | `TIMEOUT` | Запрос > 5 секунд | Прерывание операции + Log Warning. |
 | `INVALID_COLLECTION` | Ошибка в имени коллекции | Fallback на `normal_chunks`. |
 | `EMBEDDING_FAILED` | Ошибка API эмбеддингов | Retry (3 раза) с экспоненциальной задержкой. |
+
+
 
 ---
 
@@ -94,6 +124,7 @@ SPARSE_MODEL=Qdrant/bm25
 # Лимиты
 TIMEOUT_SECONDS=5
 MAX_RETRIES=3
+RETRY_BACKOFF_BASE=2 
 ```
 
 ---

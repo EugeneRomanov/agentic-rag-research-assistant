@@ -146,6 +146,24 @@ class QdrantRetriever:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
+    def search_with_backoff(self, query: str, limit: int = 3, max_retries: int = 3) -> List[Dict]:
+        """Поиск с экспоненциальной задержкой при ошибках"""
+        last_error = None
+        
+        for attempt in range(max_retries):
+            try:
+                return self.search(query, limit)
+            except Exception as e:
+                last_error = e
+                wait = 2 ** attempt  # 1, 2, 4 секунды
+                print(f"   ⚠️ Попытка {attempt + 1} не удалась: {e}")
+                if attempt < max_retries - 1:
+                    print(f"   🔄 Повтор через {wait} сек...")
+                    time.sleep(wait)
+        
+        raise Exception(f"Max retries ({max_retries}) exceeded: {last_error}")
+
+
 
 _retriever = None
 

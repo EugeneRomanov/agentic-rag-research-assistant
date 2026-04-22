@@ -192,8 +192,15 @@ async def retrieval_node(state: AgentState):
         return {"retrieved_context": [formatted_context], "sources": sources}
         
     except Exception as e:
-        print(f"   ❌ Ошибка поиска: {e}")
-        return {"retrieved_context": [], "sources": []}
+        print(f"❌ Ошибка Qdrant: {e}")
+    # Логируем в текущий трейс
+    try:
+        from langfuse import get_current_span
+        span = get_current_span()
+        span.update(level="ERROR", status_message=str(e))
+    except:
+        pass
+    return {"retrieved_context": []}
 
 
 def generate_node(state: AgentState):
@@ -232,9 +239,23 @@ QUESTION: {user_query}
 
 ANSWER:"""
     
-    res = llm.invoke([HumanMessage(content=prompt)])
-    
-    return {"messages": [res], "revision_number": state.get("revision_number", 0) + 1}
+    try:
+        res = llm.invoke([HumanMessage(content=prompt)])
+        return {"messages": [res], "revision_number": state.get("revision_number", 0) + 1}
+    except Exception as e:
+        print(f"❌ LLM ошибка: {e}")
+        # Логируем в трейс
+        try:
+            from langfuse import get_current_span
+            span = get_current_span()
+            span.update(level="ERROR", status_message=str(e))
+        except:
+            pass
+        # Возвращаем fallback ответ
+        fallback_message = HumanMessage(
+            content="Сервис временно недоступен. Пожалуйста, попробуйте позже."
+        )
+        return {"messages": [fallback_message], "revision_number": state.get("revision_number", 0) + 1}
 
 
 def critic_node(state: AgentState):
